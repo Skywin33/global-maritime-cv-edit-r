@@ -1,262 +1,108 @@
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Global Maritime CV - Professional Master Edition</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <style>
-        .a4-container { width: 210mm; min-height: 297mm; background: white; padding: 15mm; margin: 0 auto; }
-        .form-section { border-bottom: 1px solid #edf2f7; padding-bottom: 1rem; margin-bottom: 1rem; }
-        input, textarea { font-size: 0.8rem; padding: 4px; border: 1px solid #e2e8f0; border-radius: 4px; width: 100%; }
-        label { font-size: 0.7rem; font-weight: bold; color: #475569; display: block; margin-bottom: 2px; }
-        .date-input-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-bottom: 8px; border-bottom: 1px dashed #e2e8f0; padding-bottom: 4px; }
-    </style>
-</head>
-<body class="bg-gray-200 flex h-screen overflow-hidden">
+:root { 
+    --primary: #0a2342; --accent: #1e3a8a; --bg-canvas: #525659;
+    --font-size-text: 11pt; --font-size-head: 13pt;
+}
 
-    <div class="w-2/5 overflow-y-auto p-6 bg-white shadow-xl border-r">
-        <div class="flex justify-between items-center mb-6">
-            <h1 class="text-xl font-black text-blue-900 uppercase">⚓ CV Editor</h1>
-            <div class="flex gap-2">
-                <button onclick="setLanguage('TR')" id="btn-tr" class="px-4 py-1 rounded-full bg-blue-800 text-white text-xs font-bold shadow">TR</button>
-                <button onclick="setLanguage('EN')" id="btn-en" class="px-4 py-1 rounded-full bg-gray-200 text-gray-700 text-xs font-bold">EN</button>
-            </div>
-        </div>
+body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background: var(--bg-canvas);
+    overflow-x: hidden;
+}
+/* Editör Paneli Stil */
+.editor-sidebar { width: 380px; background: #1a1a1a; color: white; display: flex; flex-direction: column; box-shadow: 4px 0 10px rgba(0,0,0,0.3); }
+.logo-area { padding: 25px; font-weight: 700; font-size: 20px; color: #3b82f6; border-bottom: 1px solid #333; }
+.scroll-container { padding: 20px; overflow-y: auto; flex-grow: 1; }
+.settings-card { background: #262626; padding: 15px; border-radius: 10px; margin-bottom: 20px; }
+.settings-card h4 { margin-top: 0; font-size: 14px; color: #aaa; text-transform: uppercase; }
 
-        <div class="form-section">
-            <h2 class="font-bold text-blue-600 mb-3 uppercase lang-target" data-tr="KİŞİSEL VE İLETİŞİM" data-en="PERSONAL & CONTACT">KİŞİSEL VE İLETİŞİM</h2>
-            <div class="space-y-2">
-                <input type="text" id="f_name" placeholder="Ad Soyad / Full Name" oninput="update()">
-                <input type="text" id="f_job" placeholder="Yeterlilik / Rank" oninput="update()">
-                <div class="grid grid-cols-2 gap-2">
-                    <div>
-                        <label class="lang-target" data-tr="Doğum Tarihi" data-en="Date of Birth">Doğum Tarihi</label>
-                        <input type="date" id="f_dob" oninput="update()">
-                    </div>
-                    <div>
-                        <label class="lang-target" data-tr="Kimlik No" data-en="ID Number">Kimlik No</label>
-                        <input type="text" id="f_Id" placeholder="TC / ID" oninput="update()">
-                    </div>
-                </div>
-                <div class="grid grid-cols-2 gap-2">
-                    <input type="text" id="f_phone" placeholder="Telefon / Phone" oninput="update()">
-                    <input type="email" id="f_email" placeholder="E-posta / Email" oninput="update()">
-                </div>
-                <input type="text" id="f_address" placeholder="Adres / Address" oninput="update()">
-                <input type="file" onchange="previewImg(this)" class="text-xs mt-1">
-            </div>
-        </div>
+/* A4 Doküman Stil */
+.render-canvas { flex-grow: 1; padding: 40px; overflow-y: auto; display: flex; justify-content: center; }
+.cv-document { 
+    width: 210mm; min-height: 297mm; background: white; padding: 40px; 
+    box-sizing: border-box; position: relative; color: #1f2937;
+}
 
-        <div class="form-section">
-            <h2 class="font-bold text-blue-600 mb-3 uppercase lang-target" data-tr="EĞİTİM" data-en="EDUCATION">EĞİTİM</h2>
-            <textarea id="f_edu" placeholder="Eğitim Bilgileri" oninput="update()" class="h-16"></textarea>
-        </div>
+/* Şablon Temaları */
+.theme-navy { --primary: #0a2342; }
+.theme-classic { --primary: #000000; }
+.theme-gold { --primary: #856404; }
 
-        <div class="form-section bg-blue-50 p-4 rounded-lg shadow-inner">
-            <h2 class="font-bold text-blue-800 mb-3 uppercase lang-target" data-tr="BELGE TARİHLERİ" data-en="DOCUMENT DATES">BELGE TARİHLERİ</h2>
-            <div id="marine_inputs"></div>
-        </div>
+.top-banner { position: absolute; top: 0; left: 0; width: 100%; height: 8px; background: var(--primary); }
+.document-header { display: flex; gap: 30px; margin-top: 20px; align-items: center; border-bottom: 2px solid #eee; padding-bottom: 30px; }
+.profile-frame img { width: 140px; height: 170px; object-fit: cover; border: 1px solid #ddd; }
+.title-block h1 { margin: 0; font-size: 28pt; color: var(--primary); font-weight: 700; }
+.contact-badges { margin-top: 10px; display: flex; gap: 15px; font-size: 10pt; color: #666; }
 
-        <div class="form-section">
-            <h2 class="font-bold text-blue-600 mb-3 uppercase lang-target" data-tr="EK SERTİFİKALAR" data-en="ADDITIONAL CERTIFICATES">EK SERTİFİKALAR</h2>
-            <textarea id="f_certs" placeholder="Diğer Sertifikalar" oninput="update()" class="h-16"></textarea>
-        </div>
+.document-body { display: grid; grid-template-columns: 1.7fr 1fr; gap: 40px; margin-top: 30px; }
+.section-head { 
+    font-size: var(--font-size-head); border-bottom: 2px solid var(--primary); 
+    padding-bottom: 5px; margin-bottom: 15px; color: var(--primary); display: flex; align-items: center; gap: 8px;
+}
+.entry-list { white-space: pre-line; font-size: var(--font-size-text); line-height: 1.6; text-align: justify; }
 
-        <div class="form-section">
-            <h2 class="font-bold text-blue-600 mb-3 uppercase lang-target" data-tr="İŞ DENEYİMİ" data-en="WORK EXPERIENCE">İŞ DENEYİMİ</h2>
-            <textarea id="f_exp" placeholder="Gemi Geçmişi" oninput="update()" class="h-24"></textarea>
-        </div>
+@media print {
+    .no-print { display: none !important; }
+    .render-canvas { padding: 0; background: white; }
+    .cv-document { box-shadow: none; margin: 0; width: 100%; }
+}
+button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 8px;
+    background: #2563eb;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+}
 
-        <div class="form-section">
-            <h2 class="font-bold text-blue-600 mb-3 uppercase lang-target" data-tr="REFERANSLAR" data-en="REFERENCES">REFERANSLAR</h2>
-            <textarea id="f_ref" placeholder="Referanslar" oninput="update()" class="h-16"></textarea>
-        </div>
-        <div class="mt-6 space-y-2">
-    <button onclick="manualSave()" class="w-full bg-green-600 text-white py-2 rounded font-bold hover:bg-green-700">
-        💾 Kaydet
-    </button>
+button:hover {
+    opacity: 0.9;
+}
+@media (max-width: 768px) {
+    .app-interface {
+        flex-direction: column;
+        height: auto;
+    }
 
-    <button onclick="clearCV()" class="w-full bg-red-600 text-white py-2 rounded font-bold hover:bg-red-700">
-        🗑 Temizle
-    </button>
+    .editor-sidebar {
+        width: 100%;
+        height: auto;
+    }
 
-    <button onclick="download()" class="w-full bg-blue-700 text-white py-2 rounded font-bold hover:bg-blue-800">
-        📥 PDF İndir
-    </button>
-</div>
-    </div>
+    .render-canvas {
+        padding: 10px;
+    }
 
-    <div class="w-3/5 overflow-y-auto p-12 bg-gray-400 flex justify-center">
-        <div id="cv-preview" class="a4-container shadow-2xl text-gray-800">
-            <div class="flex gap-6 border-b-4 pb-6 mb-6 border-blue-900">
-                <img id="p_img" src="" class="w-32 h-32 rounded object-cover bg-gray-100 hidden border-2 border-blue-900 shadow">
-                <div class="flex-1">
-                    <h1 id="p_name" class="text-4xl font-black text-blue-900 uppercase leading-none mb-2">AD SOYAD</h1>
-                    <h2 id="p_job" class="text-xl text-gray-400 tracking-widest font-light uppercase">POZİSYON</h2>
-                    <div id="p_dob_area" class="text-sm text-gray-600 mt-1 font-semibold italic leading-tight"></div>
-                    <div id="p_Id_area" class="text-sm text-gray-600 font-semibold italic leading-tight"></div>
-                    
-                    <div id="p_contact" class="mt-4 text-[10px] text-gray-500 grid grid-cols-2 gap-x-4 gap-y-1 italic font-medium">
-                        <span id="p_phone"></span>
-                        <span id="p_email"></span>
-                        <span id="p_address" class="col-span-2"></span>
-                    </div>
-                </div>
-            </div>
+    .cv-document {
+        width: 100%;
+        min-height: auto;
+        padding: 20px;
+    }
 
-            <div class="grid grid-cols-3 gap-6">
-                <div class="col-span-1 border-r pr-4 bg-gray-50 p-3 rounded">
-                    <h3 id="p_cert_title" class="font-bold text-[9px] text-blue-900 border-b-2 border-blue-900 mb-4 uppercase pb-1 italic"></h3>
-                    <div id="p_marine_list" class="space-y-4 text-[9px]"></div>
-                </div>
+    .document-header {
+        flex-direction: column;
+        text-align: center;
+    }
 
-                <div class="col-span-2 space-y-6">
-                    <section>
-                        <h3 class="font-bold text-md border-b-2 border-blue-900 mb-2 text-blue-900 uppercase lang-target" data-tr="EĞİTİM" data-en="EDUCATION">EĞİTİM</h3>
-                        <div id="p_edu" class="text-sm whitespace-pre-line font-medium text-gray-700"></div>
-                    </section>
-                    
-                    <section>
-                        <h3 class="font-bold text-md border-b-2 border-blue-900 mb-2 text-blue-900 uppercase lang-target" data-tr="EK SERTİFİKALAR" data-en="ADDITIONAL CERTIFICATES">EK SERTİFİKALAR</h3>
-                        <div id="p_certs" class="text-sm whitespace-pre-line text-gray-700"></div>
-                    </section>
+    .document-body {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
 
-                    <section>
-                        <h3 class="font-bold text-md border-b-2 border-blue-900 mb-2 text-blue-900 uppercase lang-target" data-tr="İŞ DENEYİMİ" data-en="WORK EXPERIENCE">İŞ DENEYİMİ</h3>
-                        <div id="p_exp" class="text-sm whitespace-pre-line leading-relaxed text-gray-700"></div>
-                    </section>
+    .profile-frame img {
+        width: 100px;
+        height: 120px;
+    }
 
-                    <section>
-                        <h3 class="font-bold text-md border-b-2 border-blue-900 mb-2 text-blue-900 uppercase lang-target" data-tr="REFERANSLAR" data-en="REFERENCES">REFERANSLAR</h3>
-                        <div id="p_ref" class="text-sm whitespace-pre-line text-gray-700 italic"></div>
-                    </section>
-                </div>
-            </div>
-        </div>
-    </div>
+    .title-block h1 {
+        font-size: 20pt;
+    }
 
-    <script>
-        let currentLang = 'TR';
-
-        const certDictionary = {
-            f_passport: { tr: "Pasaport", en: "Passport" },
-            f_seaman: { tr: "Gemi Adamı Cüzdanı", en: "Seaman's Book" },
-            f_health: { tr: "Gemi Sağlık Yoklama Belgesi", en: "Seafarer Medical Cert." },
-            f_rank_cert: { tr: "Usta Gemici Belgesi", en: "Able Seaman Certificate" },
-            f_pax_ship: { tr: "Yolcu Gemisinde Çalışma Eğitimi", en: "Passenger Ship Training" },
-            f_fire: { tr: "Yangın Önleme ve Mücadele", en: "Fire Prev. & Fighting" },
-            f_rescue: { tr: "Cankurtarma Araçlarını Kullanma", en: "Survival Craft & Rescue" },
-            f_firstaid: { tr: "Temel İlk Yardım", en: "Elementary First Aid" },
-            f_pscr: { tr: "Kişisel Can Kurtarma Tek.", en: "Personal Survival Tech." },
-            f_sec_duty: { tr: "Belirlenmiş Güv. Görevleri", en: "Designated Security Duties" },
-            f_sec_aware: { tr: "Güvenlik Farkındalık Belgesi", en: "Security Awareness" },
-            f_sec_intro: { tr: "Güvenlikle İlgili Tanıtım", en: "Security Familiarization" },
-            f_watch: { tr: "Seyir Vardiyası Tutma", en: "Watchkeeping Certificate" }
-        };
-
-        function setLanguage(lang) {
-            currentLang = lang;
-            document.querySelectorAll('.lang-target').forEach(el => {
-                el.innerText = el.getAttribute('data-' + lang.toLowerCase());
-            });
-            document.getElementById('p_cert_title').innerText = lang === 'TR' ? "PASAPORT VE GEMİ ADAMLARI BELGELERİ" : "PASSPORT AND SEAFARERS DOCUMENTS";
-            renderInputs();
-            update();
-        }
-
-        function renderInputs() {
-            const container = document.getElementById('marine_inputs');
-            const tempValues = {};
-            Object.keys(certDictionary).forEach(k => {
-                tempValues[k + '_start'] = document.getElementById(k + '_start')?.value || "";
-                tempValues[k + '_end'] = document.getElementById(k + '_end')?.value || "";
-            });
-            container.innerHTML = "";
-            Object.keys(certDictionary).forEach(key => {
-                container.innerHTML += `
-                    <div class="mb-4">
-                        <label class="text-blue-700 uppercase text-[10px]">${certDictionary[key][currentLang.toLowerCase()]}</label>
-                        <div class="date-input-pair">
-                            <div><label class="text-[8px] opacity-60">DÜZENLEME</label><input type="date" id="${key}_start" value="${tempValues[key+'_start']}" oninput="update()"></div>
-                            <div><label class="text-[8px] opacity-60">GEÇERLİLİK</label><input type="date" id="${key}_end" value="${tempValues[key+'_end']}" oninput="update()"></div>
-                        </div>
-                    </div>`;
-            });
-        }
-
-        function formatD(val) {
-            if(!val) return "";
-            const d = val.split("-");
-            return d[2] + "/" + d[1] + "/" + d[0];
-        }
-
-        function previewImg(input) {
-            if (input.files && input.files[0]) {
-                var reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById('p_img').src = e.target.result;
-                    document.getElementById('p_img').classList.remove('hidden');
-                }
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
-
-        function update() {
-            document.getElementById('p_name').innerText = document.getElementById('f_name').value || 'NAME SURNAME';
-            document.getElementById('p_job').innerText = document.getElementById('f_job').value || 'RANK';
-            document.getElementById('p_phone').innerText = document.getElementById('f_phone').value ? '📞 ' + document.getElementById('f_phone').value : '';
-            document.getElementById('p_email').innerText = document.getElementById('f_email').value ? '✉ ' + document.getElementById('f_email').value : '';
-            document.getElementById('p_address').innerText = document.getElementById('f_address').value ? '📍 ' + document.getElementById('f_address').value : '';
-
-            // Doğum Tarihi (Üst Satır)
-            const dob = document.getElementById('f_dob').value;
-            document.getElementById('p_dob_area').innerText = dob ? (currentLang === 'TR' ? 'Doğum Tarihi: ' : 'Date of Birth: ') + formatD(dob) : "";
-
-            // Kimlik Numarası (Hemen Altı)
-            const idNum = document.getElementById('f_Id').value;
-            document.getElementById('p_Id_area').innerText = idNum ? (currentLang === 'TR' ? 'TC No: ' : 'ID No: ') + idNum : '';
-
-            document.getElementById('p_edu').innerText = document.getElementById('f_edu').value;
-            document.getElementById('p_certs').innerText = document.getElementById('f_certs').value;
-            document.getElementById('p_exp').innerText = document.getElementById('f_exp').value;
-            document.getElementById('p_ref').innerText = document.getElementById('f_ref').value;
-
-            let html = "";
-            Object.keys(certDictionary).forEach(key => {
-                const start = document.getElementById(key + '_start').value;
-                const end = document.getElementById(key + '_end').value;
-                if(start || end) {
-                    html += `<div class="mb-3 border-b border-gray-200 pb-1">
-                        <span class="font-black text-gray-800 uppercase block mb-1 text-[9px]">${certDictionary[key][currentLang.toLowerCase()]}</span>
-                        <div class="flex justify-between">
-                            <span class="text-blue-700 font-bold">${formatD(start)}</span>
-                            <span class="text-red-600 font-bold">${formatD(end)}</span>
-                        </div>
-                    </div>`;
-                }
-            });
-            document.getElementById('p_marine_list').innerHTML = html;
-        }
-
-        function download() {
-            const element = document.getElementById('cv-preview');
-            html2pdf().from(element).set({
-                margin: 0,
-                filename: 'Professional_Maritime_CV.pdf',
-                html2canvas: { scale: 3 },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            }).save();
-        }
-     // VERİLERİ KAYDET
-function saveCVData() {
-    const allInputs = document.querySelectorAll('input, textarea');
-    allInputs.forEach(el => {
-        if (el.type !== 'file' && el.id) {
-            localStorage.setItem(el.id, el.value);
-        }
-    });
-
-    const img = document.getElementById('p_img');
-    if (img.src && img.src.startsWith('data:image')) {
+    .contact-badges {
+        flex-direction: column;
+        gap: 5px;
+    }
+}
