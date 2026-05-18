@@ -3,9 +3,12 @@
     --font-size-text: 11pt; --font-size-head: 13pt;
 }
 
-body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg-canvas); overflow: hidden; }
-.app-interface { display: flex; height: 100vh; }
-
+body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background: var(--bg-canvas);
+    overflow-x: hidden;
+}
 /* Editör Paneli Stil */
 .editor-sidebar { width: 380px; background: #1a1a1a; color: white; display: flex; flex-direction: column; box-shadow: 4px 0 10px rgba(0,0,0,0.3); }
 .logo-area { padding: 25px; font-weight: 700; font-size: 20px; color: #3b82f6; border-bottom: 1px solid #333; }
@@ -57,4 +60,49 @@ button {
 
 button:hover {
     opacity: 0.9;
+}
+@media (max-width: 768px) {
+    .app-interface {
+        flex-direction: column;
+        height: auto;
+    }
+
+    .editor-sidebar {
+        width: 100%;
+        height: auto;
+    }
+
+    .render-canvas {
+        padding: 10px;
+    }
+
+    .cv-document {
+        width: 100%;
+        min-height: auto;
+        padding: 20px;
+    }
+
+    .document-header {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .document-body {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .profile-frame img {
+        width: 100px;
+        height: 120px;
+    }
+
+    .title-block h1 {
+        font-size: 20pt;
+    }
+
+    .contact-badges {
+        flex-direction: column;
+        gap: 5px;
+    }
 }
