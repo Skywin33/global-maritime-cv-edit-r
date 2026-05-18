@@ -1,8 +1,8 @@
-
 <!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Global Maritime CV - Professional Master Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -260,58 +260,3 @@ function saveCVData() {
 
     const img = document.getElementById('p_img');
     if (img.src && img.src.startsWith('data:image')) {
-        localStorage.setItem('cv_photo', img.src);
-    }
-}
-
-// VERİLERİ YÜKLE
-function loadCVData() {
-    const allInputs = document.querySelectorAll('input, textarea');
-    allInputs.forEach(el => {
-        if (el.type !== 'file' && el.id) {
-            const saved = localStorage.getItem(el.id);
-            if (saved !== null) {
-                el.value = saved;
-            }
-        }
-    });
-
-    const savedImg = localStorage.getItem('cv_photo');
-    if (savedImg) {
-        const img = document.getElementById('p_img');
-        img.src = savedImg;
-        img.classList.remove('hidden');
-    }
-
-    update();
-}
-
-// MANUEL KAYDET
-function manualSave() {
-    saveCVData();
-    alert("CV kaydedildi.");
-}
-
-// TEMİZLE
-function clearCV() {
-    if (confirm("Tüm kayıtlı veriler silinsin mi?")) {
-        localStorage.clear();
-        location.reload();
-    }
-}
-
-// OTOMATİK KAYDET
-document.addEventListener('input', function () {
-    saveCVData();
-});
-
-// SAYFA AÇILINCA YÜKLE
-window.onload = function () {
-    renderInputs();
-    loadCVData();
-};
-        setLanguage('TR');
-
-    </script>
-</body>
-</html>
