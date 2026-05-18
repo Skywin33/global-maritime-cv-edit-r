@@ -61,7 +61,13 @@ button {
 button:hover {
     opacity: 0.9;
 }
-@media (max-width: 768px) {
+
+@media (max-width: px) {
+    body {
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+
     .app-interface {
         flex-direction: column;
         height: auto;
@@ -69,40 +75,48 @@ button:hover {
 
     .editor-sidebar {
         width: 100%;
+        max-width: 100%;
         height: auto;
     }
 
     .render-canvas {
+        width: 100%;
         padding: 10px;
+        box-sizing: border-box;
     }
 
-    .cv-document {
-        width: 100%;
-        min-height: auto;
-        padding: 20px;
+      .cv-document {
+        width: 100% !important;
+        padding: 10px !important;
     }
 
     .document-header {
-        flex-direction: column;
-        text-align: center;
+        margin-top: 5px !important;
+        padding-bottom: 10px !important;
+        gap: 10px !important;
     }
 
     .document-body {
-        grid-template-columns: 1fr;
-        gap: 20px;
+        margin-top: 10px !important;
+        gap: 10px !important;
     }
 
     .profile-frame img {
-        width: 100px;
-        height: 120px;
+        width: 80px !important;
+        height: 100px !important;
     }
 
     .title-block h1 {
-        font-size: 20pt;
+        font-size: 18px !important;
     }
 
-    .contact-badges {
-        flex-direction: column;
-        gap: 5px;
+    .entry-list {
+        font-size: 9pt !important;
+        line-height: 1.3 !important;
+    }
+
+    .section-head {
+        font-size: 11pt !important;
+        margin-bottom: 8px !important;
     }
 }
