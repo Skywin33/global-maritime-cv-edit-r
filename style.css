@@ -1,0 +1,60 @@
+:root { 
+    --primary: #0a2342; --accent: #1e3a8a; --bg-canvas: #525659;
+    --font-size-text: 11pt; --font-size-head: 13pt;
+}
+
+body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg-canvas); overflow: hidden; }
+.app-interface { display: flex; height: 100vh; }
+
+/* Editör Paneli Stil */
+.editor-sidebar { width: 380px; background: #1a1a1a; color: white; display: flex; flex-direction: column; box-shadow: 4px 0 10px rgba(0,0,0,0.3); }
+.logo-area { padding: 25px; font-weight: 700; font-size: 20px; color: #3b82f6; border-bottom: 1px solid #333; }
+.scroll-container { padding: 20px; overflow-y: auto; flex-grow: 1; }
+.settings-card { background: #262626; padding: 15px; border-radius: 10px; margin-bottom: 20px; }
+.settings-card h4 { margin-top: 0; font-size: 14px; color: #aaa; text-transform: uppercase; }
+
+/* A4 Doküman Stil */
+.render-canvas { flex-grow: 1; padding: 40px; overflow-y: auto; display: flex; justify-content: center; }
+.cv-document { 
+    width: 210mm; min-height: 297mm; background: white; padding: 40px; 
+    box-sizing: border-box; position: relative; color: #1f2937;
+}
+
+/* Şablon Temaları */
+.theme-navy { --primary: #0a2342; }
+.theme-classic { --primary: #000000; }
+.theme-gold { --primary: #856404; }
+
+.top-banner { position: absolute; top: 0; left: 0; width: 100%; height: 8px; background: var(--primary); }
+.document-header { display: flex; gap: 30px; margin-top: 20px; align-items: center; border-bottom: 2px solid #eee; padding-bottom: 30px; }
+.profile-frame img { width: 140px; height: 170px; object-fit: cover; border: 1px solid #ddd; }
+.title-block h1 { margin: 0; font-size: 28pt; color: var(--primary); font-weight: 700; }
+.contact-badges { margin-top: 10px; display: flex; gap: 15px; font-size: 10pt; color: #666; }
+
+.document-body { display: grid; grid-template-columns: 1.7fr 1fr; gap: 40px; margin-top: 30px; }
+.section-head { 
+    font-size: var(--font-size-head); border-bottom: 2px solid var(--primary); 
+    padding-bottom: 5px; margin-bottom: 15px; color: var(--primary); display: flex; align-items: center; gap: 8px;
+}
+.entry-list { white-space: pre-line; font-size: var(--font-size-text); line-height: 1.6; text-align: justify; }
+
+@media print {
+    .no-print { display: none !important; }
+    .render-canvas { padding: 0; background: white; }
+    .cv-document { box-shadow: none; margin: 0; width: 100%; }
+}
+button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 8px;
+    background: #2563eb;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+button:hover {
+    opacity: 0.9;
+}
